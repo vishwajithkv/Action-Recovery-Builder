@@ -165,13 +165,6 @@ jobs:
         if_true: twrp
         if_false: omni
 
-    - name: Install Python 2
-      if: ${{ steps.buildtree.outputs.value == 'omni' }}
-      run: |
-        sudo apt -y install python2
-        cd /usr/bin
-        sudo ln -sf python2 python
-
     - name: Sync Device Dependencies
       run: |
         source build/envsetup.sh
@@ -191,6 +184,13 @@ jobs:
         repopick ${{ github.event.inputs.REPOPICK_PATCHES }}
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
       continue-on-error: true
+
+    - name: Install Python 2
+      if: ${{ steps.buildtree.outputs.value == 'omni' }}
+      run: |
+        sudo apt -y install python2
+        cd /usr/bin
+        sudo ln -sf python2 python
 
     - name: Building recovery
       run: |
