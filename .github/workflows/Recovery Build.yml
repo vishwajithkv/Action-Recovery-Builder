@@ -139,7 +139,7 @@ jobs:
       if: |
         !contains( github.event.inputs.COMMON_TREE_URL,'/TeamWin/' )
         && github.event.inputs.COMMON_TREE_URL != null
-        && github.event.inputs.COMMON_PATH != null }}
+        && github.event.inputs.COMMON_PATH != null
         && steps.buildtree.outputs.value == 'twrp'
       run: |
         mkdir -p .repo/local_manifests
