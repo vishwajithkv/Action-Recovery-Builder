@@ -211,8 +211,8 @@ jobs:
           workspace/out/target/product/${{ inputs.DEVICE_NAME }}/obj/PACKAGING/vendor_ramdisk_fragments_intermediates/recovery.*
           workspace/out/target/product/${{ inputs.DEVICE_NAME }}/ramdisk-recovery.*
         name: >
-          ${{ inputs.DEVICE_NAME }} (${GITHUB_REF_NAME})
-
+          ${{ inputs.DEVICE_NAME }} (TWRP)
+          
           Run ID: ${{ github.run_id }}
         tag_name: ${{ github.run_id }}
         body: |
