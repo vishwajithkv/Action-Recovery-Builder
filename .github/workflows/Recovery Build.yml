@@ -32,7 +32,7 @@ on:
         required: true
         default: 'I003D'
       REPOPICK_PATCHES:
-        description: '(Optional) Gerrit commit numbers separated by a space to be included in the build'
+        description: '(Optional) Gerrit commit numbers separated by a space to be included in the build (leave blank if not using)'
         type: string
         required: false
       BUILD_TARGET:
