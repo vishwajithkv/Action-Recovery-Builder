@@ -28,7 +28,7 @@ on:
         required: true
         default: 'device/asus/I003D'
       DEVICE_NAME:
-        description: 'Device Name from tree (should match name on vendor_device.mk)'
+        description: 'Device Name from tree (should match name on twrp_<DEVICE_NAME>.mk)'
         required: true
         default: 'I003D'
       REPOPICK_PATCHES:
