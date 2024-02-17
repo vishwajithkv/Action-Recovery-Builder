@@ -1,12 +1,26 @@
-# Use Github Actions to compile Recovery
+# Use Github Actions to compile Custom Recovery
 ```
-Support TWRP compilation and production
-(PBRP, SHRP, & OrangeFox support are WIP)
+Supports TWRP, OrangeFox, PBRP & SHRP compilation and production
 ```
 ---
 
 ## Release Notes
 ```
+= 2024-02-17
+- Add PBRP support
+- Add SHRP support
+- Update README to support all branches
+
+= 2024-02-16
+- Remove requirement to set git credentials
+- Fix OrangeFox build
+
+= 2024-02-16
+- Clarify options in README
+
+= 2024-02-15
+- Add option to include recovery installer
+
 = 2024-02-12
 - Split custom builds into separate branches (TWRP is default, others are WIP)
 - Simplify manifest branch selection and remove URL input
@@ -58,16 +72,19 @@ Support TWRP compilation and production
 -----
 
 ## Parameter Description
+(not all branches require/support all of the below fields)
 
 | Name | Description | Example |
 | ------------ | -------------------- | ------------ |
 | `MANIFEST_BRANCH` | Source branch | 12.1 |
-| `DEVICE_TREE_URL` | Device address | https://github.com/TeamWin/android_device_asus_I003D |
-| `DEVICE_TREE_BRANCH` | Device branch | android-12.1 |
-| `DEVICE_PATH` | Device location | device/asus/I003D |
-| `DEVICE_NAME` | Model name | I003D |
-| `REPOPICK_PATCHES` | Gerrit patches to include in build (space separated) | 1245 1437 |
+| `DEVICE_TREE_URL` | Device tree address | https://github.com/TeamWin/android_device_asus_I003D |
+| `DEVICE_TREE_BRANCH` | Device branch that you want to use for build (typically corresponds to the manifest branch) | android-12.1 |
+| `DEVICE_PATH` | Device tree location for syncing, relative to workspace root (usually listed as "LOCAL_PATH" or "DEVICE_PATH" in BoardConfig.mk) | device/asus/I003D |
+| `DEVICE_NAME` | Model name (same as twrp_`<DEVICE_NAME>`.mk from device tree) | I003D |
+| `DEVICE_MAKEFILE` | Name of device-specific makefile from tree (format: `<PREFIX>_<DEVICE_NAME>`) | twrp_I003D
+| `REPOPICK_PATCHES` | (Optional) Gerrit patches to include in build (space separated) - if you don't know what this means, then leave blank | 1245 1437 |
 | `BUILD_TARGET` | Build Target Partition (boot/recovery/vendor_boot) | recovery |
+| `RECOVERY_INSTALLER` | Include recovery installer zip | no |
 
 -----
 
@@ -75,17 +92,16 @@ Support TWRP compilation and production
 ```
 For example, your username is: Run-114514
 ```
-#### 1. Click'Fork' in the upper right corner of this repo
+#### 1. Click 'Fork' in the upper right corner of this repo
 ![](https://i.bmp.ovh/imgs/2021/10/6b6ed9f29e732372.png)
 #### 2. After waiting for the automatic redirection, you will see your own username
 ![](https://i.bmp.ovh/imgs/2021/10/66cfe324c0ebb69b.png)
-#### 3. Change the [username and email](https://github.com/CaptainThrowback/Action-Recovery-Builder/blob/main/.github/workflows/Recovery%20Build.yml#L106-L107) in the workflow to reflect your Github credentials
 ## Building the Recovery
-#### 4. Click'Actions-Recovery Build'
+#### 3. Click 'Actions-Recovery Build'
 ![](https://i.bmp.ovh/imgs/2021/10/23896d1b66292047.png)
-#### 5. Click'Run workflow' and fill in according to the above'parameter description'
+#### 4. Click 'Run workflow', choose the branch for the recovery that you want to build, and fill in according to the above 'Parameter Description'
 ![](https://i.bmp.ovh/imgs/2021/10/9cb7871267cf2f53.png)
-#### 6. After filling in, click'Run workflow' to start running
+#### 5. After filling in, click 'Run workflow' to start running
 
 -----
 
@@ -93,8 +109,9 @@ For example, your username is: Run-114514
 Can be downloaded at [Release](../../releases)
 
 -----
-## Remark
+## Reference
 
 #### TeamWin Recovery Project: https://github.com/minimal-manifest-twrp
+#### OrangeFox Recovery: https://gitlab.com/OrangeFox/sync.git
 #### PitchBlack Recovery Project: https://github.com/PitchBlackRecoveryProject/manifest_pb.git
 #### SKYHAWK Recovery Project: https://github.com/SHRP/manifest.git
