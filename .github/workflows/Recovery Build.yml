@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://gitlab.com/OrangeFox/device/lavender.git
+        default: https://gitlab.com/OrangeFox/device/lavender
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
@@ -88,7 +88,22 @@ jobs:
 
     - name: Place device trees and kernel
       run: |
-        git clone ${{ inputs.DEVICE_TREE_URL }} ${{ inputs.DEVICE_PATH }}
+        mkdir -p .repo/local_manifests
+        cp -f ${GITHUB_WORKSPACE}/templates/roomservice.xml .repo/local_manifests/
+        REMOTE_NAME=$(grep -oP '(?<=://).*(?=\.)' <<< ${{ inputs.DEVICE_TREE_URL }})
+        sed -i "s%\!--project name=\"{DEVICE_TREE_URL_REPO}%project name=\"$(grep -oP "(?<=${REMOTE_NAME}.com/).*" <<< ${{ inputs.DEVICE_TREE_URL }})%g" .repo/local_manifests/roomservice.xml
+        sed -i "s%{DEVICE_PATH}%${{ inputs.DEVICE_PATH }}%g" .repo/local_manifests/roomservice.xml
+        sed -i "s%{DEVICE_REMOTE_NAME}%${REMOTE_NAME}%g" .repo/local_manifests/roomservice.xml
+        sed -i "s%{DEVICE_TREE_BRANCH}\"/-->%${{ inputs.DEVICE_TREE_BRANCH }}\"/>%g" .repo/local_manifests/roomservice.xml
+        repo sync ${{ inputs.DEVICE_PATH }} -j$(nproc --all)
+        DT_NAME=$(awk -F/ '{print $NF}' <<< ${{ inputs.DEVICE_TREE_URL }})
+        if [ "$DT_NAME" != ${{ inputs.DEVICE_NAME }} ]; then
+          if [ -z "$(ls ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk)" ]; then
+            mkdir ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}
+            DT_BoardConfig=$(ls ${{ inputs.DEVICE_PATH }}/BoardConfig* | head -1)
+            echo -e "-include ${DT_BoardConfig}">${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk
+          fi
+        fi
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Build it
@@ -99,8 +114,11 @@ jobs:
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_BUILD_DEVICE=${{ inputs.DEVICE_NAME }}
         export LC_ALL="C"
-        if [ -n ${{ inputs.OPTIONAL_FLAGS}} ]; then
+        if [ -n "${{ inputs.OPTIONAL_FLAGS}}" ]; then
           ${{ inputs.OPTIONAL_FLAGS }}
+          echo -e "Additional Command(s): ${{ inputs.OPTIONAL_FLAGS }}"
+        else
+          echo "No additional commands specified."
         fi
         lunch twrp_${{ inputs.DEVICE_NAME }}-eng && mka $(tr -d _ <<< ${{ inputs.BUILD_TARGET }})image
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
