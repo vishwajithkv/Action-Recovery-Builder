@@ -84,6 +84,7 @@ jobs:
         git clone https://gitlab.com/OrangeFox/sync.git
         cd sync
         ./orangefox_sync.sh --branch ${{ inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}
+        sed -i "s/TeamWin/OrangeFox/g" ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}/vendor/twrp/build/tools/roomservice.py
 
     - name: Place device trees and kernel
       run: |
