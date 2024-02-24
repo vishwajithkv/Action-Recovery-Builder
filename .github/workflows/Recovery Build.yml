@@ -98,7 +98,7 @@ jobs:
         repo sync ${{ inputs.DEVICE_PATH }} -j$(nproc --all)
         DT_NAME=$(awk -F/ '{print $NF}' <<< ${{ inputs.DEVICE_TREE_URL }})
         if [ "$DT_NAME" != ${{ inputs.DEVICE_NAME }} ]; then
-          if [ -z "$(ls ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk)" ]; then
+          if [ -z "$(ls ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk 2>/dev/null)" ]; then
             mkdir ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}
             DT_BoardConfig=$(ls ${{ inputs.DEVICE_PATH }}/BoardConfig* | head -1)
             echo -e "-include ${DT_BoardConfig}">${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk
