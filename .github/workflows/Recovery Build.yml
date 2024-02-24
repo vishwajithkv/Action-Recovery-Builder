@@ -121,8 +121,10 @@ jobs:
     - name: Install Python 2
       run: |
         sudo apt -y install python2
-        cd /usr/bin
-        sudo ln -sf python2 python
+        if [ "${{ steps.vendorname.outputs.prefix }}" != "twrp" ]; then
+          cd /usr/bin
+          sudo ln -sf python2 python
+        fi
 
     - name: Building recovery
       run: |
