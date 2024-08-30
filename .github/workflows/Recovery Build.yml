@@ -14,7 +14,7 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://gitlab.com/OrangeFox/device/lavender
+        default: https://github.com/vishwajithkv/twrp_device_xiaomi_phoenix/
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
@@ -22,11 +22,11 @@ on:
       DEVICE_PATH:
         description: Path the device tree should be synced to, relative to source root
         required: true
-        default: device/xiaomi/lavender
+        default: device/xiaomi/phoenix
       DEVICE_NAME:
         description: Device Name from tree (should match name on twrp_<DEVICE_NAME>.mk)
         required: true
-        default: lavender
+        default: phoenix
       BUILD_TARGET:
         type: choice
         description: Partition containing recovery ramdisk
@@ -107,6 +107,8 @@ jobs:
             mkdir ${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}
             DT_BoardConfig=$(ls ${{ inputs.DEVICE_PATH }}/BoardConfig* | head -1)
             echo -e "-include ${DT_BoardConfig}">${{ inputs.DEVICE_PATH }}/${{ inputs.DEVICE_NAME }}/BoardConfig.mk
+            echo -e "Removing duplicates"
+            rm -rf device/xiaomi/phoenix/phoenix
           fi
         fi
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
