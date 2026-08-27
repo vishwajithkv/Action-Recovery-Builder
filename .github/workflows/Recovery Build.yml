@@ -87,7 +87,8 @@ jobs:
         # The current sync script dropped pre-11.0 manifests. Use the last
         # archived script that still contains the real fox_9.0 setup.
         if [ "${{ inputs.MANIFEST_BRANCH }}" = "9.0" ]; then
-          git fetch --depth=1 origin 5a98906
+          # A shallow clone does not advertise historical commits by SHA.
+          git fetch --unshallow origin
           git checkout --detach 5a98906
         fi
         ./orangefox_sync.sh --branch ${{ inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}
