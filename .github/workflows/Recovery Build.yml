@@ -7,9 +7,8 @@ on:
         type: choice
         description: Manifest Branch
         options:
-        - 9.0
         - 12.1
-        - 11
+        - 14.1
         required: true
         default: 12.1
       DEVICE_TREE_URL:
