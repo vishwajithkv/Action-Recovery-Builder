@@ -141,7 +141,8 @@ jobs:
         # The minimal manifest may already provide this directory. Overlay
         # the Android 9 tools instead of cloning into a non-empty path.
         mkdir -p external/f2fs-tools
-        cp -a "$F2FS_TMP/f2fs-tools/." external/f2fs-tools/
+        rsync -a --exclude='.git' --exclude='.git/**' \
+          "$F2FS_TMP/f2fs-tools/" external/f2fs-tools/
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Build it
