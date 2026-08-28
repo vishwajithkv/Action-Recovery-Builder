@@ -139,14 +139,24 @@ jobs:
         set -e
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_BUILD_DEVICE=${{ inputs.DEVICE_NAME }}
+        export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
         export LC_ALL="C"
+        if [ "${{ inputs.MANIFEST_BRANCH }}" = "9.0" ]; then
+          export FOX_VERSION="R11.1_fox_9.0"
+          export FOX_BUILD_TYPE="Alpha"
+        fi
         if [ -n "${{ inputs.OPTIONAL_FLAGS}}" ]; then
           ${{ inputs.OPTIONAL_FLAGS }}
           echo -e "Additional Command(s): ${{ inputs.OPTIONAL_FLAGS }}"
         else
           echo "No additional commands specified."
         fi
-        (lunch twrp_${{ inputs.DEVICE_NAME }}-eng || lunch omni_${{ inputs.DEVICE_NAME }}-eng) && mka $(tr -d _ <<< ${{ inputs.BUILD_TARGET }})image
+        if [ -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk" ]; then
+          lunch omni_${{ inputs.DEVICE_NAME }}-eng
+        else
+          lunch twrp_${{ inputs.DEVICE_NAME }}-eng
+        fi
+        mka $(tr -d _ <<< ${{ inputs.BUILD_TARGET }})image
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Upload to Release
