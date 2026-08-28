@@ -166,11 +166,12 @@ jobs:
           export TARGET_SCREEN_HEIGHT=1600
           export TW_THEME=portrait_hdpi
           test -f "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
-          test -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
+          test -f "${{ inputs.DEVICE_PATH }}/twrp_${{ inputs.DEVICE_NAME }}.mk"
+          echo 'BOARD_BUILD_SYSTEM_ROOT_IMAGE := true' >> "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
           # Fox 9.0 still ships the legacy vendor/omni config namespace;
           # 12.1+ uses vendor/twrp (the tree default).
           sed -i 's%vendor/twrp/config/common.mk%vendor/omni/config/common.mk%' \
-            "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
+            "${{ inputs.DEVICE_PATH }}/twrp_${{ inputs.DEVICE_NAME }}.mk"
           # No radio images are supplied for this recovery-only build. The
           # Fox 9 checker is Python 2-only, so replace it with a Python 3
           # no-op rather than running an irrelevant validation step.
@@ -183,7 +184,9 @@ jobs:
         else
           echo "No additional commands specified."
         fi
-        if [ -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk" ]; then
+        if [ "${{ inputs.MANIFEST_BRANCH }}" != "9.0" ] && [ -f "${{ inputs.DEVICE_PATH }}/twrp_${{ inputs.DEVICE_NAME }}.mk" ]; then
+          lunch twrp_${{ inputs.DEVICE_NAME }}-eng
+        elif [ -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk" ]; then
           lunch omni_${{ inputs.DEVICE_NAME }}-eng
         else
           lunch twrp_${{ inputs.DEVICE_NAME }}-eng
