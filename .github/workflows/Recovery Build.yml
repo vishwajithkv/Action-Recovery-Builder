@@ -132,6 +132,13 @@ jobs:
         fi
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
+    - name: Add Android 9 f2fs tools
+      if: inputs.MANIFEST_BRANCH == '9.0'
+      run: |
+        git clone --depth=1 --branch android-9.0.0_r9 \
+          https://android.googlesource.com/platform/external/f2fs-tools external/f2fs-tools
+      working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
+
     - name: Build it
       run: |
         set +e
