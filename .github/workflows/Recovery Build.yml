@@ -167,10 +167,11 @@ jobs:
           export TW_THEME=portrait_hdpi
           test -f "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
           test -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
-          # Android 9's radio-version checker is Python 2 syntax, while
-          # Ubuntu 22.04 executes build helpers with Python 3. Convert its
-          # legacy print statements without requiring the unavailable 2to3.
-          python3 -c 'from pathlib import Path; import re; p=Path("build/make/tools/check_radio_versions.py"); p.write_text(re.sub(r"(?m)^([ \\t]*)print (.+)$", r"\1print(\2)", p.read_text()))'
+          # No radio images are supplied for this recovery-only build. The
+          # Fox 9 checker is Python 2-only, so replace it with a Python 3
+          # no-op rather than running an irrelevant validation step.
+          printf '%s\n' '#!/usr/bin/env python3' 'import sys' 'sys.exit(0)' > build/make/tools/check_radio_versions.py
+          chmod +x build/make/tools/check_radio_versions.py
         fi
         if [ -n "${{ inputs.OPTIONAL_FLAGS}}" ]; then
           ${{ inputs.OPTIONAL_FLAGS }}
