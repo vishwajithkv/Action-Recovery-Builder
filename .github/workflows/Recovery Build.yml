@@ -167,6 +167,10 @@ jobs:
           export TW_THEME=portrait_hdpi
           test -f "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
           test -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
+          # Fox 9.0 still ships the legacy vendor/omni config namespace;
+          # 12.1+ uses vendor/twrp (the tree default).
+          sed -i 's%vendor/twrp/config/common.mk%vendor/omni/config/common.mk%' \
+            "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
           # No radio images are supplied for this recovery-only build. The
           # Fox 9 checker is Python 2-only, so replace it with a Python 3
           # no-op rather than running an irrelevant validation step.
