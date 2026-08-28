@@ -93,6 +93,11 @@ jobs:
           fi
           git cat-file -e 5a98906^{commit} 2>/dev/null || git fetch origin 5a98906
           git checkout --detach 5a98906
+          # The archived script assumes an SSH submodule URL and the old
+          # vendor "master" branch. Current OrangeFox uses HTTPS theme
+          # fallback and the "legacy" vendor branch for pre-10.0 builds.
+          sed -i 's/git clone --recurse-submodules \$URL -b \$BRANCH recovery/git clone \$URL -b \$BRANCH recovery/' orangefox_sync.sh
+          sed -i 's/\[ "\$BASE_VER" -lt 10 \] && BRANCH="master"/[ "\$BASE_VER" -lt 10 ] \&\& BRANCH="legacy"/' orangefox_sync.sh
         fi
         ./orangefox_sync.sh --branch ${{ inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}
         sed -i "s/TeamWin/OrangeFox/g" ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}/vendor/twrp/build/tools/roomservice.py
