@@ -160,7 +160,8 @@ jobs:
           # Fox 9.0 predates the newer SDK/theme auto-detection used by the
           # current builder. Malta is an Android 9/10-era 720x1600 device.
           export PLATFORM_SDK_VERSION=28
-          export CM_PLATFORM_SDK_VERSION=28
+          # Keep this below 4 so Fox 9.0 uses recovery/sbin f2fs tools.
+          export CM_PLATFORM_SDK_VERSION=0
           export TARGET_SCREEN_WIDTH=720
           export TARGET_SCREEN_HEIGHT=1600
           export TW_THEME=portrait_hdpi
