@@ -96,11 +96,14 @@ jobs:
           # The archived script assumes an SSH submodule URL and the old
           # vendor "master" branch. Current OrangeFox uses HTTPS theme
           # fallback and the "legacy" vendor branch for pre-10.0 builds.
-          sed -i 's/git clone --recurse-submodules \$URL -b \$BRANCH recovery/git clone \$URL -b \$BRANCH recovery/' orangefox_sync.sh
-          sed -i 's/\[ "\$BASE_VER" -lt 10 \] && BRANCH="master"/[ "\$BASE_VER" -lt 10 ] \&\& BRANCH="legacy"/' orangefox_sync.sh
+          sed -i 's/--recurse-submodules //g; s/BRANCH="master"/BRANCH="legacy"/g' orangefox_sync.sh
+          grep -n -E 'git clone .*\$URL|BASE_VER.*BRANCH=' orangefox_sync.sh
         fi
         ./orangefox_sync.sh --branch ${{ inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}
-        sed -i "s/TeamWin/OrangeFox/g" ${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}/vendor/twrp/build/tools/roomservice.py
+        ROOMSERVICE="${{ github.workspace }}/fox_${{ inputs.MANIFEST_BRANCH }}/vendor/twrp/build/tools/roomservice.py"
+        if [ -f "$ROOMSERVICE" ]; then
+          sed -i "s/TeamWin/OrangeFox/g" "$ROOMSERVICE"
+        fi
 
     - name: Place device trees and kernel
       run: |
