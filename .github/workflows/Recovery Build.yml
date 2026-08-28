@@ -167,6 +167,9 @@ jobs:
           export TW_THEME=portrait_hdpi
           test -f "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
           test -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
+          # Android 9's radio-version checker is Python 2 syntax, while
+          # Ubuntu 22.04 executes build helpers with Python 3.
+          2to3 -w -n build/make/tools/check_radio_versions.py >/dev/null
         fi
         if [ -n "${{ inputs.OPTIONAL_FLAGS}}" ]; then
           ${{ inputs.OPTIONAL_FLAGS }}
