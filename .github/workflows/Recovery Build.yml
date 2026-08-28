@@ -144,6 +144,15 @@ jobs:
         if [ "${{ inputs.MANIFEST_BRANCH }}" = "9.0" ]; then
           export FOX_VERSION="R11.1_fox_9.0"
           export FOX_BUILD_TYPE="Alpha"
+          # Fox 9.0 predates the newer SDK/theme auto-detection used by the
+          # current builder. Malta is an Android 9/10-era 720x1600 device.
+          export PLATFORM_SDK_VERSION=28
+          export CM_PLATFORM_SDK_VERSION=28
+          export TARGET_SCREEN_WIDTH=720
+          export TARGET_SCREEN_HEIGHT=1600
+          export TW_THEME=portrait_hdpi
+          test -f "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
+          test -f "${{ inputs.DEVICE_PATH }}/omni_${{ inputs.DEVICE_NAME }}.mk"
         fi
         if [ -n "${{ inputs.OPTIONAL_FLAGS}}" ]; then
           ${{ inputs.OPTIONAL_FLAGS }}
