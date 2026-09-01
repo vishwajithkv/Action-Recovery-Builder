@@ -148,14 +148,12 @@ jobs:
     - name: Restore Android 14 support for legacy fscrypt kernels
       if: inputs.MANIFEST_BRANCH == '14.1'
       run: |
-        # Malta's 4.9 kernel predates FS_IOC_ADD_ENCRYPTION_KEY. Restore
-        # LineageOS's upstream session-keyring fallback for kernels below 4.14.
-        git -C system/vold fetch https://github.com/LineageOS/android_system_vold.git \
-          5cbee1431fcd7e0b0174e0bea22a11145f1cf592
-        # OrangeFox carries local Android.bp changes before this step. Apply
-        # only the source portions; TeamWin already links libkeyutils in libvold.
-        git -C system/vold show --format= FETCH_HEAD -- \
-          FsCrypt.cpp KeyUtil.cpp KeyUtil.h | git -C system/vold apply -
+        # Malta's 4.9 kernel predates FS_IOC_ADD_ENCRYPTION_KEY. This is the
+        # LineageOS session-keyring fallback (5cbee143), rebased onto Fox 14.1's
+        # nebrassy vold tree where the installKeyLegacy call is commented out.
+        # TeamWin already links libkeyutils in libvold, so Android.bp is intact.
+        git -C system/vold apply \
+          "${GITHUB_WORKSPACE}/templates/malta-fox14-legacy-fscrypt.patch"
         git -C system/vold apply \
           "${GITHUB_WORKSPACE}/templates/malta-fox14-vold-fstab.patch"
         git -C system/vold diff --check -- FsCrypt.cpp KeyUtil.cpp KeyUtil.h
