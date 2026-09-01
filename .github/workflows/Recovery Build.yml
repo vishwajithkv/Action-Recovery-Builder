@@ -152,18 +152,13 @@ jobs:
         # LineageOS's upstream session-keyring fallback for kernels below 4.14.
         git -C system/vold fetch https://github.com/LineageOS/android_system_vold.git \
           5cbee1431fcd7e0b0174e0bea22a11145f1cf592
-        set +e
-        git -C system/vold cherry-pick --no-commit FETCH_HEAD
-        PATCH_RESULT=$?
-        set -e
-        if [ "$PATCH_RESULT" -ne 0 ]; then
-          # TeamWin already links libkeyutils in libvold; retain its Android.bp.
-          git -C system/vold checkout --ours Android.bp
-          git -C system/vold add Android.bp FsCrypt.cpp KeyUtil.cpp KeyUtil.h
-        fi
+        # OrangeFox carries local Android.bp changes before this step. Apply
+        # only the source portions; TeamWin already links libkeyutils in libvold.
+        git -C system/vold show --format= FETCH_HEAD -- \
+          FsCrypt.cpp KeyUtil.cpp KeyUtil.h | git -C system/vold apply -
         git -C system/vold apply \
           "${GITHUB_WORKSPACE}/templates/malta-fox14-vold-fstab.patch"
-        git -C system/vold diff --check
+        git -C system/vold diff --check -- FsCrypt.cpp KeyUtil.cpp KeyUtil.h
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Build it
