@@ -157,6 +157,11 @@ jobs:
         git -C system/vold apply \
           "${GITHUB_WORKSPACE}/templates/malta-fox14-vold-fstab.patch"
         git -C system/vold diff --check -- FsCrypt.cpp KeyUtil.cpp KeyUtil.h
+        # libsysutils is a dynamic dependency of the Fox recovery binary, but
+        # nebrassy's Android 14 module does not expose a recovery variant.
+        git -C system/core apply \
+          "${GITHUB_WORKSPACE}/templates/malta-fox14-libsysutils-recovery.patch"
+        git -C system/core diff --check -- libsysutils/Android.bp
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Build it
