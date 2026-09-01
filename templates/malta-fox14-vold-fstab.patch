@@ -1,0 +1,22 @@
+diff --git a/FsCrypt.cpp b/FsCrypt.cpp
+index 71bdbe3..d8f0ee1 100644
+--- a/FsCrypt.cpp
++++ b/FsCrypt.cpp
+@@ -256,9 +256,15 @@ static bool MightBeEmmcStorage(const std::string& blk_device) {
+ // Sets s_data_options to the file encryption options for the /data filesystem.
+ static bool init_data_file_encryption_options() {
+     if (fstab_default.empty()) {
+         if (!ReadDefaultFstab(&fstab_default)) {
+-            PLOG(ERROR) << "Failed to open default fstab";
+-            return false;
++            // Recovery's four-column fstab is for TWRP's partition parser.
++            // Android vold needs the stock five-column fs_mgr format instead.
++            fstab_default.clear();
++            if (!android::fs_mgr::ReadFstabFromFile("/vendor/etc/fstab.mt6762",
++                                                    &fstab_default)) {
++                PLOG(ERROR) << "Failed to open Malta fs_mgr fstab";
++                return false;
++            }
+         }
+     }
+     auto entry = GetEntryForMountPoint(&fstab_default, DATA_MNT_POINT);
