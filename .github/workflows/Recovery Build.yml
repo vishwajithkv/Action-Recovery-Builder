@@ -190,6 +190,15 @@ jobs:
           # normalize its advertised combo only inside this 14.1 workspace.
           sed -i "s/twrp_${{ inputs.DEVICE_NAME }}-eng/twrp_${{ inputs.DEVICE_NAME }}-ap2a-eng/g" \
             "${{ inputs.DEVICE_PATH }}/AndroidProducts.mk"
+          # Malta's boot partition is only 40 MiB. Android 14 recovery has a
+          # larger base ramdisk, so omit optional language, host-side repack,
+          # and logcat payloads while retaining fastbootd and FBE support.
+          sed -i \
+            -e 's/^TW_EXTRA_LANGUAGES := true/TW_EXTRA_LANGUAGES := false/' \
+            -e 's/^TW_INCLUDE_REPACKTOOLS := true/TW_INCLUDE_REPACKTOOLS := false/' \
+            -e 's/^TWRP_INCLUDE_LOGCAT := true/TWRP_INCLUDE_LOGCAT := false/' \
+            -e 's/^TARGET_USES_LOGD := true/TARGET_USES_LOGD := false/' \
+            "${{ inputs.DEVICE_PATH }}/BoardConfig.mk"
           lunch twrp_${{ inputs.DEVICE_NAME }}-ap2a-eng
         elif [ "${{ inputs.MANIFEST_BRANCH }}" != "9.0" ] && [ -f "${{ inputs.DEVICE_PATH }}/twrp_${{ inputs.DEVICE_NAME }}.mk" ]; then
           lunch twrp_${{ inputs.DEVICE_NAME }}-eng
@@ -208,7 +217,7 @@ jobs:
           fox_${{ inputs.MANIFEST_BRANCH }}/out/target/product/${{ inputs.DEVICE_NAME }}/${{ inputs.BUILD_TARGET }}.img
           fox_${{ inputs.MANIFEST_BRANCH }}/out/target/product/${{ inputs.DEVICE_NAME }}/ramdisk-recovery.*
         name: |
-          ${{ inputs.DEVICE_NAME }} (OrangeFox)
+          ${{ inputs.DEVICE_NAME }} (OrangeFox ${{ inputs.MANIFEST_BRANCH }})
         tag_name: ${{ github.run_id }}
         body: |
           Manifest: ${{ inputs.MANIFEST_BRANCH }}
