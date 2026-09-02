@@ -227,6 +227,11 @@ jobs:
           lunch twrp_${{ inputs.DEVICE_NAME }}-eng
         fi
         mka $(tr -d _ <<< ${{ inputs.BUILD_TARGET }})image
+        if [ "${{ inputs.MANIFEST_BRANCH }}" = "14.1" ]; then
+          # Crypto links recovery against libsysutils. Do not publish another
+          # image that builds successfully but crash-loops at the device splash.
+          test -f "out/target/product/${{ inputs.DEVICE_NAME }}/recovery/root/system/lib64/libsysutils.so"
+        fi
       working-directory: fox_${{ inputs.MANIFEST_BRANCH }}
 
     - name: Upload to Release
